@@ -68,7 +68,7 @@ let _ =
       (*Printf.printf "%i items read\n%!" (List.length res);*)
       Printf.printf "%s\n%!" 
       (List.fold_left 
-      (fun x y -> x ^ y)
+      (fun x y -> x ^ "\n" ^ y)
       "" 
       (get_problems res)
       );
