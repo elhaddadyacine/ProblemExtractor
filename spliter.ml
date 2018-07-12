@@ -39,39 +39,88 @@ let parse_file f =
   with Sys_error (msg) -> Lextstp.Error.err msg; exit 4
 ;;
 
-let rec get_inferences tstp_lines = 
+(* let x = Hashtbl.find name_formula_tbl "c_0_0";; *)
+
+(* get only lines that contains inferences *)
+let rec get_inferences tstp_lines =
   match tstp_lines with
   |[] -> []
   |Formula_annot
-    (name, 
-    ("hypothesis"|"negated_conjecture"), 
-    _, 
-    Some Inference(_, _, _))::l' 
-      -> (List.hd tstp_lines)::(get_inferences l')
+    (_, _, _, Some Inference(_, _, _)) as f::l' -> f::(get_inferences l')
   |_::l' -> get_inferences l';;
 
-let problem_to_string line = 
+(* get the premises of an inference rule *)
+let rec get_premises annotation =
+  match annotation with
+  |Name name -> [name]
+  |Inference(_, _, l) -> get_premises_list l
+  |List l -> get_premises_list l
+  |_ -> []
+  and get_premises_list annotation_list =
+    match annotation_list with
+    |[] -> []
+    |a::l' -> (get_premises a) @ (get_premises_list l')
+    ;;
+
+(* get the string format of premises *)
+let rec print_premises tstp_lines =
+  match tstp_lines with
+  |[] -> []
+  |Formula_annot (name, _, _, Some inf)::l' -> (name, get_premises inf) :: (print_premises l')
+  |_::l' -> print_premises l';;
+
+
+(* let problem_to_string line =
   match line with
   |Include(_, _)   -> "Include"
   |Formula_annot (name, "axiom", body, _)  -> name ^ " Axiom"
   |Formula_annot (name, "hypothesis", body, _)  -> name ^ " Hypothesis"
   |Formula_annot (name, "negated_conjecture", body, _)  -> name ^ " Negated_conjecture"
-  |_ -> "Other";;
+  |_ -> "Other";; *)
 
 
-let get_problems problem_list = List.map (fun p -> problem_to_string p) problem_list;;
+
+(* let get_problems problem_list = List.map (fun p -> problem_to_string p) problem_list;; *)
+
+(* print used axioms in TPTP format *)
+let rec axioms_to_string (name, l) = 
+    match l with
+    |[]     -> ""
+    |x::l'  -> "fof(" ^ x ^ ", axiom, Formula).\n" ^ (axioms_to_string (name, l'))  (*FIXME : get formula from hash table*)
+    ;;
+
+(* print the goal to prove in TPTP format *)
+let goal_to_string (name, l) = 
+  "fof(" ^ name ^ ", conjecture, Formula).";; (*FIXME : get formula from hash table*)
+
+(* print the whole TPTP plain content *)
+let inference_to_string inference = 
+  (axioms_to_string inference) ^ (goal_to_string inference);;
+
+(* generate single TPTP file *)
+let generate_tptp name lines =
+  Printf.printf "Generating TPTP of %s%!" name;
+  let oc = open_out name in  
+    fprintf oc "%s\n" lines;     
+    close_out oc;
+  Printf.printf "\t \027[32m OK \027[30m\n%!";;           
+
+let rec generate_files tstp_fname premises = 
+  match premises with
+  |[] -> ()
+  |(name, l)::l' -> 
+    generate_tptp ((Filename.remove_extension tstp_fname) ^ "-" ^ name ^ ".p") (inference_to_string (name, l));
+    generate_files tstp_fname l';;
 
 let _ =
   match Sys.argv with
   | [|_ ; fname|] ->
       let res : Phrase.tpphrase list = parse_file fname in
-      (*Printf.printf "%i items read\n%!" (List.length res);*)
-      Printf.printf "%s\n%!" 
-      (List.fold_left 
-      (fun x y -> x ^ "\n" ^ y)
-      "" 
-      (get_problems res)
-      );
+      let inferences = get_inferences res in
+      let premises = print_premises inferences in
+      Printf.printf "Generating %i TPTP Problem from %s \n%!" (List.length premises) fname;
+      generate_files fname premises
+      
   | _             ->
       Printf.eprintf "Usage: %s file.p\n%!" Sys.argv.(0);
       exit 1
