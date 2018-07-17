@@ -44,6 +44,45 @@ and private_info = {
   typ : expr option;
 };;
 
+(* get all quantified vars [X; ...; Y] *)
+let rec get_var_all e = 
+  match e with
+  |Eall(v, e', _) -> v::(get_var_all e')
+  |_ -> [];;
+
+(* get the quantified formula ![X, ..., Y] : F -> F*)
+let rec get_e_all e = 
+  match e with
+  |Eall(v, e', _) -> get_e_all e'
+  |e' -> e';;
+
+(* get all quantified vars ![X, ..., Y] *)
+let rec print_var_all l = 
+  match l with
+  |[] -> ""
+  |(Evar (x, _))::[] -> x
+  |(Evar (x, _))::l' -> x ^ ", " ^ (print_var_all l')
+  |_ -> "";;
+
+(* print fof formula var, app, or, all, not*)
+let rec expr_to_string e = 
+  match e with
+  |Evar (x, _) -> x
+  |Eapp (e, [], _) -> (expr_to_string e)
+  |Eapp (e, l, _) -> (expr_to_string e) ^ "(" ^ (expr_list_to_string l) ^ ")"
+  |Eor (e1, e2, _) ->  (expr_to_string e1) ^ "|" ^ (expr_to_string e2)
+  |Eall (v, e, _) as f -> "! [" ^ (print_var_all (get_var_all f)) ^ "] : " ^ (expr_to_string (get_e_all f))
+  |Enot (e, _) -> "~" ^ (expr_to_string e)
+  |_ -> "Other"
+  
+(* print predicate arguments P(x, ..., y) *)
+  and expr_list_to_string l = 
+    match l with
+    |[] -> ""
+    |e::[] -> expr_to_string e
+    |e::l' -> (expr_to_string e) ^ "," ^ (expr_list_to_string l')
+  ;;
+
 type definition =
   | DefReal of string * string * expr * expr list * expr * string option
   | DefPseudo of (expr * int) * string * expr * expr list * expr

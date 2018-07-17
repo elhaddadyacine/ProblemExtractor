@@ -86,12 +86,12 @@ let rec print_premises tstp_lines =
 let rec axioms_to_string (name, l) = 
     match l with
     |[]     -> ""
-    |x::l'  -> "fof(" ^ x ^ ", axiom, Formula).\n" ^ (axioms_to_string (name, l'))  (*FIXME : get formula from hash table*)
+    |x::l'  -> "fof(" ^ x ^ ", axiom, (" ^ (expr_to_string (Hashtbl.find name_formula_tbl x)) ^ ")).\n" ^ (axioms_to_string (name, l'))  (*FIXED*)
     ;;
 
 (* print the goal to prove in TPTP format *)
 let goal_to_string (name, l) = 
-  "fof(" ^ name ^ ", conjecture, Formula).";; (*FIXME : get formula from hash table*)
+  "fof(" ^ name ^ ", conjecture, (" ^ (expr_to_string (Hashtbl.find name_formula_tbl name)) ^ ")).";; (*FIXED*)
 
 (* print the whole TPTP plain content *)
 let inference_to_string inference = 
@@ -103,7 +103,7 @@ let generate_tptp name lines =
   let oc = open_out name in  
     fprintf oc "%s\n" lines;     
     close_out oc;
-  Printf.printf "\t \027[32m OK \027[30m\n%!";;           
+  Printf.printf "\t \027[32m OK \027[0m\n%!";;           
 
 let rec generate_files tstp_fname premises = 
   match premises with
@@ -119,7 +119,9 @@ let _ =
       let inferences = get_inferences res in
       let premises = print_premises inferences in
       Printf.printf "Generating %i TPTP Problem from %s \n%!" (List.length premises) fname;
-      generate_files fname premises
+      generate_files fname premises;
+     (* Printing all formulas in name_formula_tbl *)
+     (* Hashtbl.iter (fun x y -> Printf.printf "%s : %s\n%!" x (Expr.expr_to_string y)) Phrase.name_formula_tbl *)
       
   | _             ->
       Printf.eprintf "Usage: %s file.p\n%!" Sys.argv.(0);

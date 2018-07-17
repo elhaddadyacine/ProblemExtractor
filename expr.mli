@@ -43,6 +43,9 @@ exception Mismatch;;
 
 type t = expr;;
 
+(* Expr printing *)
+val expr_to_string : expr -> string;;
+
 (* Expr comparison *)
 val equal : t -> t -> bool;;
 val compare : t -> t -> int;;
