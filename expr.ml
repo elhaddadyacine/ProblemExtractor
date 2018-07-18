@@ -23,10 +23,10 @@ type expr =
   | Enot of expr * private_info
   | Eand of expr * expr * private_info
   | Eor of expr * expr * private_info
-  | Eimply of expr * expr * private_info (* ADD to expr_to string *)
-  | Eequiv of expr * expr * private_info (* ADD to expr_to string *)
-  | Etrue (* ADD to expr_to string *)
-  | Efalse  (* ADD to expr_to string *)
+  | Eimply of expr * expr * private_info
+  | Eequiv of expr * expr * private_info
+  | Etrue 
+  | Efalse 
 
   | Eall of expr * expr * private_info
   | Eex of expr * expr * private_info
@@ -88,6 +88,8 @@ let rec expr_to_string e =
   |Eall (v, e, _) as f -> "! [" ^ (print_var_all (get_var_all f)) ^ "] : (" ^ (expr_to_string (get_e_all f)) ^ ")"
   |Eex (v, e, _) as f -> "? [" ^ (print_var_all (get_var_ex f)) ^ "] : (" ^ (expr_to_string (get_e_ex f)) ^ ")"
   |Enot (e, _) -> "~" ^ (expr_to_string e)
+  |Eimply(a, b, _) -> "(" ^ (expr_to_string a) ^ ") => (" ^ (expr_to_string b) ^ ")"
+  |Eequiv(a, b, _) -> "(" ^ (expr_to_string a) ^ ") <=> (" ^ (expr_to_string b) ^ ")"
   |_ -> failwith "Formula not accepted"
   
 (* print predicate arguments P(x, ..., y) *)
