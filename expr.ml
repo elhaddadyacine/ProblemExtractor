@@ -23,10 +23,10 @@ type expr =
   | Enot of expr * private_info
   | Eand of expr * expr * private_info
   | Eor of expr * expr * private_info
-  | Eimply of expr * expr * private_info
-  | Eequiv of expr * expr * private_info
-  | Etrue
-  | Efalse
+  | Eimply of expr * expr * private_info (* ADD to expr_to string *)
+  | Eequiv of expr * expr * private_info (* ADD to expr_to string *)
+  | Etrue (* ADD to expr_to string *)
+  | Efalse  (* ADD to expr_to string *)
 
   | Eall of expr * expr * private_info
   | Eex of expr * expr * private_info
@@ -56,6 +56,18 @@ let rec get_e_all e =
   |Eall(v, e', _) -> get_e_all e'
   |e' -> e';;
 
+(* get all quantified vars [X; ...; Y] *)
+let rec get_var_ex e = 
+  match e with
+  |Eex(v, e', _) -> v::(get_var_ex e')
+  |_ -> [];;
+
+(* get the quantified formula ? [X, ..., Y] : F -> F*)
+let rec get_e_ex e = 
+  match e with
+  |Eex(v, e', _) -> get_e_ex e'
+  |e' -> e';;
+
 (* get all quantified vars ![X, ..., Y] *)
 let rec print_var_all l = 
   match l with
@@ -72,8 +84,9 @@ let rec expr_to_string e =
   |Eapp (e, l, _) -> (expr_to_string e) ^ "(" ^ (expr_list_to_string l) ^ ")"
   |Eor (e1, e2, _) ->  (expr_to_string e1) ^ "|" ^ (expr_to_string e2)
   |Eall (v, e, _) as f -> "! [" ^ (print_var_all (get_var_all f)) ^ "] : " ^ (expr_to_string (get_e_all f))
+  |Eex (v, e, _) as f -> "? [" ^ (print_var_all (get_var_ex f)) ^ "] : " ^ (expr_to_string (get_e_ex f))
   |Enot (e, _) -> "~" ^ (expr_to_string e)
-  |_ -> "Other"
+  |_ -> failwith "Formula not accepted"
   
 (* print predicate arguments P(x, ..., y) *)
   and expr_list_to_string l = 
