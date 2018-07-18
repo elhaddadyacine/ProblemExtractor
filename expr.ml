@@ -79,12 +79,14 @@ let rec print_var_all l =
 (* print fof formula var, app, or, all, not*)
 let rec expr_to_string e = 
   match e with
+  |Efalse -> "$false"
+  |Etrue -> "$true"
   |Evar (x, _) -> x
   |Eapp (e, [], _) -> (expr_to_string e)
   |Eapp (e, l, _) -> (expr_to_string e) ^ "(" ^ (expr_list_to_string l) ^ ")"
   |Eor (e1, e2, _) ->  (expr_to_string e1) ^ "|" ^ (expr_to_string e2)
-  |Eall (v, e, _) as f -> "! [" ^ (print_var_all (get_var_all f)) ^ "] : " ^ (expr_to_string (get_e_all f))
-  |Eex (v, e, _) as f -> "? [" ^ (print_var_all (get_var_ex f)) ^ "] : " ^ (expr_to_string (get_e_ex f))
+  |Eall (v, e, _) as f -> "! [" ^ (print_var_all (get_var_all f)) ^ "] : (" ^ (expr_to_string (get_e_all f)) ^ ")"
+  |Eex (v, e, _) as f -> "? [" ^ (print_var_all (get_var_ex f)) ^ "] : (" ^ (expr_to_string (get_e_ex f)) ^ ")"
   |Enot (e, _) -> "~" ^ (expr_to_string e)
   |_ -> failwith "Formula not accepted"
   
