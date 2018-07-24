@@ -86,12 +86,18 @@ let rec print_premises tstp_lines =
 let rec axioms_to_string (name, l) = 
     match l with
     |[]     -> ""
-    |x::l'  -> "fof(" ^ x ^ ", axiom, (" ^ (expr_to_string (Hashtbl.find name_formula_tbl x)) ^ ")).\n" ^ (axioms_to_string (name, l'))  (*FIXED*)
+    |x::l'  -> "%---- fof(" ^ x ^ ", axiom, (" ^ (expr_to_string (Hashtbl.find name_formula_tbl x)) ^ ")).\n" ^ (axioms_to_string (name, l'))  
     ;;
+
+
+let rec hypothesis_to_string (name, l) = 
+  match l with
+  |[] -> (expr_to_string (Hashtbl.find name_formula_tbl name))
+  |x::l' -> "(" ^ (expr_to_string (Hashtbl.find name_formula_tbl x)) ^ ") => (" ^ (hypothesis_to_string (name, l')) ^ ")";;
 
 (* print the goal to prove in TPTP format *)
 let goal_to_string (name, l) = 
-  "fof(" ^ name ^ ", conjecture, (" ^ (expr_to_string (Hashtbl.find name_formula_tbl name)) ^ ")).";; (*FIXED*)
+  "fof(" ^ name ^ ", conjecture, (" ^ (hypothesis_to_string (name, l)) ^ ")).";; 
 
 (* print the whole TPTP plain content *)
 let inference_to_string inference = 
