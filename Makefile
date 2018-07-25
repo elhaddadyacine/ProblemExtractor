@@ -50,7 +50,7 @@ parsetstp.cmx: parsetstp.ml parsetstp.cmi expr.cmx phrase.cmx
 	ocamlfind ocamlopt -c $<
 
 
-spliter: namespace.cmx misc.cmx expr.cmx phrase.cmx parsetstp.cmx lextstp.cmx spliter.ml
+spliter: namespace.cmx misc.cmx expr.cmx phrase.cmx parsetstp.cmx lextstp.cmx signature.ml spliter.ml
 	ocamlfind ocamlopt -linkpkg -package unix -o $@ $^
 
 # Cleaning.

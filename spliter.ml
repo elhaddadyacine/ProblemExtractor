@@ -128,7 +128,9 @@ let _ =
       generate_files fname premises;
      (* Printing all formulas in name_formula_tbl *)
      (* Hashtbl.iter (fun x y -> Printf.printf "%s : %s\n%!" x (Expr.expr_to_string y)) Phrase.name_formula_tbl *)
-      
+      Printf.printf "%s\n%!" (Expr.expr_to_string (Hashtbl.find Phrase.name_formula_tbl "c_0_0"));
+      Hashtbl.iter (fun x y -> Signature.get_symbols y) Phrase.name_formula_tbl;
+      Signature.print_symbols Signature.symbols_table;
   | _             ->
       Printf.eprintf "Usage: %s file.p\n%!" Sys.argv.(0);
       exit 1
