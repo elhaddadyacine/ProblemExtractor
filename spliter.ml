@@ -105,7 +105,7 @@ let inference_to_string inference =
 
 (* generate single TPTP file *)
 let generate_tptp name lines =
-  Printf.printf "Generating TPTP of %s%!" name;
+  Printf.printf "Process problem %s%!" name;
   let oc = open_out name in  
     fprintf oc "%s\n" lines;     
     close_out oc;
@@ -117,20 +117,20 @@ let rec generate_files tstp_fname premises =
   |(name, l)::l' -> 
     generate_tptp ((Filename.remove_extension tstp_fname) ^ "-" ^ name ^ ".p") (inference_to_string (name, l));
     generate_files tstp_fname l';;
-
+let insert_symbols ht = 
+  Hashtbl.iter (fun x y -> Signature.get_symbols y) ht;;
 let _ =
   match Sys.argv with
   | [|_ ; fname|] ->
       let res : Phrase.tpphrase list = parse_file fname in
       let inferences = get_inferences res in
       let premises = print_premises inferences in
-      Printf.printf "Generating %i TPTP Problem from %s \n%!" (List.length premises) fname;
+      Printf.printf "Generating %i TPTP Problems from %s trace.\n%!" (List.length premises) fname;
       generate_files fname premises;
      (* Printing all formulas in name_formula_tbl *)
      (* Hashtbl.iter (fun x y -> Printf.printf "%s : %s\n%!" x (Expr.expr_to_string y)) Phrase.name_formula_tbl *)
-      Printf.printf "%s\n%!" (Expr.expr_to_string (Hashtbl.find Phrase.name_formula_tbl "c_0_0"));
-      Hashtbl.iter (fun x y -> Signature.get_symbols y) Phrase.name_formula_tbl;
-      Signature.print_symbols Signature.symbols_table;
+      insert_symbols Phrase.name_formula_tbl;
+      Signature.generate_signature_file (Filename.remove_extension fname) Signature.symbols_table;
   | _             ->
       Printf.eprintf "Usage: %s file.p\n%!" Sys.argv.(0);
       exit 1
