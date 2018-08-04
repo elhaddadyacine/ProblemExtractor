@@ -28,9 +28,9 @@ let print_symbols ht =
 
 (* Generating signature file *)
 let generate_signature_file name ht =
-    let name = "signature_" ^ name ^ ".dk" in  
-  Printf.printf "Generating signature file %s%!" name;
-  let oc = open_out name in
+    let name_dk = name ^ ".dk" in  
+  Printf.printf "Generating signature file %s%!" name_dk;
+  let oc = open_out ((Sys.getcwd ()) ^ "/" ^ name ^ "/" ^ name_dk) in
     Hashtbl.iter (fun x n -> Printf.fprintf oc "def %s : %s.\n" x (get_type n)) ht;
     close_out oc;
   Printf.printf "\t \027[32m OK \027[0m\n%!";;

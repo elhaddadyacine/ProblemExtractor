@@ -115,7 +115,7 @@ let rec generate_files tstp_fname premises =
   match premises with
   |[] -> ()
   |(name, l)::l' -> 
-    generate_tptp ((Filename.remove_extension tstp_fname) ^ "-" ^ name ^ ".p") (inference_to_string (name, l));
+    generate_tptp ( (Sys.getcwd ())^ "/" ^ tstp_fname ^ "/" ^ name ^ ".p") (inference_to_string (name, l));
     generate_files tstp_fname l';;
 let insert_symbols ht = 
   Hashtbl.iter (fun x y -> Signature.get_symbols y) ht;;
@@ -125,12 +125,16 @@ let _ =
       let res : Phrase.tpphrase list = parse_file fname in
       let inferences = get_inferences res in
       let premises = print_premises inferences in
+      let name = (Filename.remove_extension (Filename.basename fname)) in 
+      if Sys.command ("mkdir -p " ^ (Sys.getcwd ()) ^ "/" ^ name) = 0 
+      then () 
+      else Printf.printf "Error while creating %s folder " name;
       Printf.printf "Generating %i TPTP Problems from %s trace.\n%!" (List.length premises) fname;
-      generate_files fname premises;
+      generate_files name premises;
      (* Printing all formulas in name_formula_tbl *)
      (* Hashtbl.iter (fun x y -> Printf.printf "%s : %s\n%!" x (Expr.expr_to_string y)) Phrase.name_formula_tbl *)
       insert_symbols Phrase.name_formula_tbl;
-      Signature.generate_signature_file (Filename.remove_extension fname) Signature.symbols_table;
+      Signature.generate_signature_file name Signature.symbols_table;
   | _             ->
       Printf.eprintf "Usage: %s file.p\n%!" Sys.argv.(0);
       exit 1
