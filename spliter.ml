@@ -118,7 +118,7 @@ let rec generate_files tstp_fname premises =
     generate_tptp ( (Sys.getcwd ())^ "/" ^ tstp_fname ^ "/" ^ name ^ ".p") (inference_to_string (name, l));
     generate_files tstp_fname l';;
 let insert_symbols ht = 
-  Hashtbl.iter (fun x y -> Signature.get_symbols y) ht;;
+  Hashtbl.iter (fun x y -> Signature.get_symbols true y) ht;;
 let _ =
   match Sys.argv with
   | [|_ ; fname|] ->
