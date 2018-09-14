@@ -118,12 +118,33 @@ let rec generate_files tstp_fname premises =
     generate_files tstp_fname l';;
 let insert_symbols ht = 
   Hashtbl.iter (fun x y -> Signature.get_symbols true y) ht;;
+
+(* get only the name of each inference (intermediate lemma) *)
+let get_lemmas l = List.map (fun e -> fst e) l;; 
+
+
+let rec get_axioms inferences lemmas =
+  match inferences with
+   [] -> []
+  |(name, prems)::l' -> (check_axiom prems lemmas) @ (get_axioms l' lemmas)
+  and
+  check_axiom l lemmas = 
+    match l with
+    |[] -> []
+    |x::l' -> if List.exists (fun e -> x = e) lemmas then 
+                  check_axiom l' lemmas
+              else
+                  x::(check_axiom l' lemmas);;
+
+
 let _ =
   match Sys.argv with
   | [|_ ; fname|] ->
+      
       let res : Phrase.tpphrase list = parse_file fname in
       let inferences = get_inferences res in
       let premises = print_premises inferences in
+      (* let () = List.iter (fun m -> Printf.printf "%s" m) (get_axioms premises (get_lemmas premises)) in *)
       let name = (Filename.remove_extension (Filename.basename fname)) in 
       if Sys.command ("mkdir -p " ^ (Sys.getcwd ()) ^ "/" ^ name) = 0 
       then () 
