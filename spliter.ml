@@ -45,8 +45,7 @@ let parse_file f =
 let rec get_inferences tstp_lines =
   match tstp_lines with
   |[] -> []
-  |Formula_annot
-    (_, _, _, Some Inference(_, _, _)) as f::l' -> f::(get_inferences l')
+  |Formula_annot(_, _, _, Some (Inference(_, _, _)|Name _|List _)) as f::l' -> f::(get_inferences l')
   |_::l' -> get_inferences l';;
 
 (* get the premises of an inference rule *)
