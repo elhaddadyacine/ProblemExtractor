@@ -155,6 +155,7 @@ let _ =
      (* Hashtbl.iter (fun x y -> Printf.printf "%s : %s\n%!" x (Expr.expr_to_string y)) Phrase.name_formula_tbl *)
       insert_symbols Phrase.name_formula_tbl;
       Signature.generate_signature_file name Signature.symbols_table;
+      Proof.generate_dk name (get_axioms premises (get_lemmas premises)) name;
   | _             ->
       Printf.eprintf "Usage: %s file.p\n%!" Sys.argv.(0);
       exit 1
