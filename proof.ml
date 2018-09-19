@@ -21,17 +21,44 @@ let rec print_dk_type ex signame =
         |x::l'          -> (print_dk_type x signame) ^ " " ^ (print_dk_type_vars l' signame)
 ;;
 
-let rec generate_dk name l signame = 
+
+
+
+let rec generate_abs axioms = 
+    match axioms with
+     []             -> ""
+    |ax::l'         -> "ax_" ^ ax ^ " => " ^ (generate_abs l')
+;;
+let is_axiom ax proof_tree =
+    if List.exists (fun e -> fst e = ax) proof_tree then false else true;;
+let rec make_one_proof goal proof_tree = 
+    if is_axiom goal proof_tree then "ax_" ^ goal else
+    goal ^ ".delta " ^ (make_proofs (get_axioms goal proof_tree) proof_tree)
+and
+    make_proofs axioms proof_tree =
+        match axioms with
+         []                 -> ""
+        |ax::l'             -> "(" ^ (make_one_proof ax proof_tree) ^ ") " 
+                            ^ (make_proofs l' proof_tree)
+and get_axioms goal proof_tree = 
+    match proof_tree with
+     []         -> []
+    |(g, la)::l'-> if g = goal then la else get_axioms goal l'
+;;
+
+let rec generate_dk name l signame proof_tree goal = 
     let name_file = ( (Sys.getcwd ())^ "/" ^ name ^ "/proof_" ^ name ^ ".dk") in 
     let oc = open_out name_file in
         Printf.printf "Generating the proof file %s%!" name_file;
         Printf.fprintf oc "def proof_%s : \n(" name;
         generate_dk_list oc l signame;
-        Printf.fprintf oc ")\n\n:= ";
+        Printf.fprintf oc ")\n\n:=\n";
+        Printf.fprintf oc "%s" (generate_abs l);
+        Printf.fprintf oc "\n";
+        Printf.fprintf oc "%s." (make_one_proof goal proof_tree);
         close_out oc;
         Printf.printf "\t \027[32m OK \027[0m\n%!"
 and
-
 generate_dk_list oc l signame =
     match l with
      []                 -> ()
