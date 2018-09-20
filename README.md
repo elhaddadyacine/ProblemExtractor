@@ -1,8 +1,7 @@
 
 # Problem Extractor
 
-A tool to extract `TPTP` problems from a `TSTP` trace.
-It generates also a signature file in `Dedukti` format
+A tool to extract `TPTP` problems from a `TSTP` trace and reconstruct the proof in `Dedukti`.
 
 ## Installation
     
@@ -10,8 +9,9 @@ It generates also a signature file in `Dedukti` format
 
 - `OCaml >= 4.05.1`
 - `ocamlbuild`
-- `dedukti` (optional)
-- `eprover` or any first order automated prover (optional)
+- `zenon_modulo` (https://github.com/elhaddadyacine/zenon_modulo)
+- `dedukti` (optional) (https://github.com/Deducteam/Dedukti)
+- `eprover` or any first order automated prover (optional) (https://github.com/eprover/eprover)
 
 ### Compilation
 
@@ -45,6 +45,11 @@ Or (if you installed the tool)
 
 The program will create a folder which has the same name as the trace.
 It generates all the sub problems in the `TPTP` format and add a signature file in `Dedukti` format.
+And finally, produice a proof using all sub solutions in `Dedukti`.
+
+You need to have `zenon_modulo` installed to generate the proofs of each sub problem and then generate the `.dko` files with `Dedukti`
+#### Exemple
+
 
 ## Contact
 
