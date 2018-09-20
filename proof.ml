@@ -8,7 +8,7 @@ let rec print_dk_type ex signame =
     |Eapp (Evar (e, _), [], _)    -> print_var e signame
     |Eapp (Evar (e, _), l, _)     -> (print_var e signame) ^ " " ^ (print_dk_type_vars l signame)
     |Eor (e1, e2, _)    ->  "zen.or \n(" ^ (print_dk_type e1 signame) ^ ")\n(" ^ (print_dk_type e2 signame) ^ ")"
-    |Eall (v, e, _)     -> "zen.forall (" ^ (print_dk_type v "") ^ ")\n(" ^ (print_dk_type e signame) ^ ")" 
+    |Eall (v, e, _)     -> "zen.forall (zen.iota)\n( " ^ (print_dk_type v "") ^ " => " ^ (print_dk_type e signame) ^ ")" 
     |Eex (v, e, _)      -> "zen.exists (" ^ (print_dk_type v "") ^ ")\n(" ^ (print_dk_type e signame) ^ ")" 
     |Enot (e, _) -> "zen.not (" ^ (print_dk_type e signame) ^ ")"
     |Eimply(a, b, _) -> "zen.imp \n(" ^ (print_dk_type a signame) ^ ")\n(" ^ (print_dk_type b signame) ^ ")"
