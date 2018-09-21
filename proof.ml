@@ -49,7 +49,7 @@ and get_axioms goal proof_tree =
 let rec generate_dk name l signame proof_tree goal = 
     let name_file = ( (Sys.getcwd ())^ "/" ^ name ^ "/proof_" ^ name ^ ".dk") in 
     let oc = open_out name_file in
-        Printf.printf "Generating the proof file %s%!" name_file;
+        Printf.printf "\t ==== Generating the proof file ====\n";
         Printf.fprintf oc "def proof_%s : \n(" name;
         generate_dk_list oc l signame;
         Printf.fprintf oc ")\n\n:=\n";
@@ -57,7 +57,7 @@ let rec generate_dk name l signame proof_tree goal =
         Printf.fprintf oc "\n";
         Printf.fprintf oc "%s." (make_one_proof goal proof_tree);
         close_out oc;
-        Printf.printf "\t \027[32m OK \027[0m\n%!"
+        Printf.printf "%s \027[32m OK \027[0m\n\n%!" name_file
 and
 generate_dk_list oc l signame =
     match l with

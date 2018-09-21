@@ -154,8 +154,9 @@ let _ =
       if Sys.command ("mkdir -p " ^ (Sys.getcwd ()) ^ "/" ^ name ^ "/lemmas") = 0 
       then () 
       else Printf.printf "Error while creating %s/lemmas folder " name;
-      Printf.printf "Generating %i TPTP Problems from %s trace.\n%!" (List.length premises) fname;
+      Printf.printf "\t ==== Generating %i TPTP Problems from %s ==== \n%!" (List.length premises) fname;
       generate_files name premises;
+      Printf.printf "\n%!";
      (* Printing all formulas in name_formula_tbl *)
      (* Hashtbl.iter (fun x y -> Printf.printf "%s : %s\n%!" x (Expr.expr_to_string y)) Phrase.name_formula_tbl *)
       insert_symbols Phrase.name_formula_tbl;

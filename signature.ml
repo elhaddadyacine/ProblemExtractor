@@ -33,13 +33,15 @@ let generate_signature_file name ht =
     let name_dk = name ^ ".dk" in  
     let name = ((Sys.getcwd ()) ^ "/" ^ name ^ "/" ^ name_dk) in 
     let oc = open_out name in
-        Printf.printf "Generating signature file %s%!" name;
+        Printf.printf "\t ==== Generating signature file ====\n";
         Hashtbl.iter (fun x n -> Printf.fprintf oc "def %s : %s.\n" x (get_type (fst n) (snd n))) ht;
         close_out oc;
-        Printf.printf "\t \027[32m OK \027[0m\n%!";;
+        Printf.printf "%s \027[32m OK \027[0m\n\n%!" name;;
 
 let generate_makefile name = 
-    let oc = open_out ((Sys.getcwd ()) ^ "/" ^ name ^ "/Makefile" ) in
+    let name_file = ((Sys.getcwd ()) ^ "/" ^ name ^ "/Makefile" ) in
+    let oc = open_out  name_file in
+        Printf.printf "\t ==== Generating the Makefile ==== \n";
         Printf.fprintf oc "TPTP=$(wildcard lemmas/*.p)\n";
         Printf.fprintf oc "DKS=$(TPTP:.p=.dk)\n";
         Printf.fprintf oc "DKO=$(DKS:.dk=.dko)\n";
@@ -62,4 +64,5 @@ let generate_makefile name =
         Printf.fprintf oc "\tdkcheck -nl -I /usr/local/lib -I lemmas $< -e\n";
         Printf.fprintf oc "\n";
 
+        Printf.printf "%s\t \027[32m OK \027[0m\n\n%!" name_file;
         close_out oc;;
