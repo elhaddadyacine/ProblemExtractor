@@ -1,7 +1,7 @@
 
 # Problem Extractor
 
-A tool to extract `TPTP` problems from a `TSTP` trace and reconstruct the proof in `Dedukti`.
+A tool to extract `TPTP` problems from a `TSTP` trace and reconstruct the proof in `dedukti`.
 
 ## Installation
     
@@ -24,7 +24,7 @@ To compile the tool, just type :
 ```bash
     make
 ```
-It will generate a native file named `spliter.native` if you want to install the tool in your binary installation folder (where ocaml is installed) use :
+It will generate a native file named `spliter.native` if you want to install the tool in your binary installation folder (where ocaml is installed, if ocaml is installed in the `/usr/bin/` directory then you need the to call `make install` with `sudo`) use :
 
 ```bash
     make install
@@ -44,37 +44,42 @@ Or (if you installed the tool)
 ```
 
 The program will create a folder which has the same name as the trace.
-It generates all the sub problems in the `TPTP` format and add a signature file in `Dedukti` format.
-And finally, produce a proof using all sub solutions in `Dedukti`.
+It generates all the sub problems in the `TPTP` format (inside `lemmas` folder) and add a signature file in `dedukti` format.
+It generates also a Makefile to produce proofs in `dedukti` and typecheck them.
+And finally, produce a proof using all sub solutions in `dedukti`.
 
-You need to have `zenon_modulo` installed to generate the proofs of each sub problem and then generate the `.dko` files with `Dedukti`
+You need to have `zenon_modulo` and `dedukti` installed to generate the proofs of each sub problem and then generate the `.dko` files with `dedukti`
 #### Exemple
 
 A trace file named `trace.p` in the repository contains an exemple.
 
-The program will generate 3 files 1 signature file and 1 proof file :
-- c_0_5.p
-- c_0_6.p
-- c_0_7.p
+The program will generate 3 files, 1 signature file, a Makefile and 1 proof file :
+- lemmas/c_0_5.p
+- lemmas/c_0_6.p
+- lemmas/c_0_7.p
 - trace.dk
+- Makefile
 - proof_trace.dk
 
-We will use `zenon_modulo` to produce a proof of each problem
+We will produce the proof of each sub problem and typecheck them with : 
 ```bash
-    zenon_modulo -itptp -odkterm -sig trace trace/c_0_5.p > trace/c_0_5.dk
-    zenon_modulo -itptp -odkterm -sig trace trace/c_0_6.p > trace/c_0_6.dk
-    zenon_modulo -itptp -odkterm -sig trace trace/c_0_7.p > trace/c_0_7.dk
+cd trace
+make
+```
+Files produced : 
+```bash
+c_0_5.dk        # the proof of each problem (with zenon_modulo)
+c_0_6.dk        # ...
+c_0_7.dk        # ...
+
+c_0_5.dko       # typeching of each proof (with dedukti)
+c_0_6.dko       # ...
+c_0_7.dko       # ...
+
+trace.dko       # the signature of the proof (contains all used symbols)
+proof_trace.dko # the global proof (contains the combination of sub solutions)
 ```
 
-Then, we generate `.dko` of the signature file and for each proof with `Dedukti` in the right order
-```bash
-    cd trace
-    dkcheck -nl -I /path/to/zenon/library trace.dk -e
-    dkcheck -nl -I /path/to/zenon/library c_0_5.dk -e
-    dkcheck -nl -I /path/to/zenon/library c_0_6.dk -e
-    dkcheck -nl -I /path/to/zenon/library c_0_7.dk -e
-    dkcheck -nl -I /path/to/zenon/library proof_trace.dk -e
-```
 
 ## Contact
 
