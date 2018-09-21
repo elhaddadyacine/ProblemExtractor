@@ -114,7 +114,7 @@ let rec generate_files tstp_fname premises =
   match premises with
   |[] -> ()
   |(name, l)::l' -> 
-    generate_tptp ( (Sys.getcwd ())^ "/" ^ tstp_fname ^ "/" ^ name ^ ".p") (inference_to_string (name, l));
+    generate_tptp ( (Sys.getcwd ())^ "/" ^ tstp_fname ^ "/lemmas/" ^ name ^ ".p") (inference_to_string (name, l));
     generate_files tstp_fname l';;
 let insert_symbols ht = 
   Hashtbl.iter (fun x y -> Signature.get_symbols true y) ht;;
@@ -151,9 +151,9 @@ let _ =
       let axioms = get_axioms premises (get_lemmas premises) in
       (* let () = List.iter (fun m -> Printf.printf "%s" m) (get_axioms premises (get_lemmas premises)) in *)
       let name = (Filename.remove_extension (Filename.basename fname)) in 
-      if Sys.command ("mkdir -p " ^ (Sys.getcwd ()) ^ "/" ^ name) = 0 
+      if Sys.command ("mkdir -p " ^ (Sys.getcwd ()) ^ "/" ^ name ^ "/lemmas") = 0 
       then () 
-      else Printf.printf "Error while creating %s folder " name;
+      else Printf.printf "Error while creating %s/lemmas folder " name;
       Printf.printf "Generating %i TPTP Problems from %s trace.\n%!" (List.length premises) fname;
       generate_files name premises;
      (* Printing all formulas in name_formula_tbl *)
@@ -161,6 +161,7 @@ let _ =
       insert_symbols Phrase.name_formula_tbl;
       Signature.generate_signature_file name Signature.symbols_table;
       Proof.generate_dk name axioms name premises (last_goal premises);
+      Signature.generate_makefile name;
   | _             ->
       Printf.eprintf "Usage: %s file.p\n%!" Sys.argv.(0);
       exit 1

@@ -37,3 +37,29 @@ let generate_signature_file name ht =
         Hashtbl.iter (fun x n -> Printf.fprintf oc "def %s : %s.\n" x (get_type (fst n) (snd n))) ht;
         close_out oc;
         Printf.printf "\t \027[32m OK \027[0m\n%!";;
+
+let generate_makefile name = 
+    let oc = open_out ((Sys.getcwd ()) ^ "/" ^ name ^ "/Makefile" ) in
+        Printf.fprintf oc "TPTP=$(wildcard lemmas/*.p)\n";
+        Printf.fprintf oc "DKS=$(TPTP:.p=.dk)\n";
+        Printf.fprintf oc "DKO=$(DKS:.dk=.dko)\n";
+        Printf.fprintf oc "all: proof_%s.dko $(DKS)\n" name;
+        Printf.fprintf oc "\n";
+
+        Printf.fprintf oc "lemmas/%%.dk : lemmas/%%.p\n";
+        Printf.fprintf oc "\tzenon_modulo -itptp -odkterm -sig %s $< > $@\n" name;
+        Printf.fprintf oc "\n";
+
+        Printf.fprintf oc "lemmas/%%.dko : lemmas/%%.dk %s.dko\n" name;
+        Printf.fprintf oc "\tdkcheck -nl -I /usr/local/lib $< -e\n";
+        Printf.fprintf oc "\n";
+
+        Printf.fprintf oc "%s.dko: %s.dk\n" name name;
+        Printf.fprintf oc "\tdkcheck -nl -I /usr/local/lib $< -e\n";
+        Printf.fprintf oc "\n";
+
+        Printf.fprintf oc "proof_%s.dko : proof_%s.dk %s.dko $(DKO)\n" name name name;
+        Printf.fprintf oc "\tdkcheck -nl -I /usr/local/lib -I lemmas $< -e\n";
+        Printf.fprintf oc "\n";
+
+        close_out oc;;
