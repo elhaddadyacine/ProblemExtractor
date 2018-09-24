@@ -42,6 +42,7 @@ let generate_makefile name =
     let name_file = ((Sys.getcwd ()) ^ "/" ^ name ^ "/Makefile" ) in
     let oc = open_out  name_file in
         Printf.printf "\t ==== Generating the Makefile ==== \n";
+        Printf.fprintf oc "DIR?=/usr/local/lib/\n";
         Printf.fprintf oc "TPTP=$(wildcard lemmas/*.p)\n";
         Printf.fprintf oc "DKS=$(TPTP:.p=.dk)\n";
         Printf.fprintf oc "DKO=$(DKS:.dk=.dko)\n";
@@ -53,15 +54,15 @@ let generate_makefile name =
         Printf.fprintf oc "\n";
 
         Printf.fprintf oc "lemmas/%%.dko : lemmas/%%.dk %s.dko\n" name;
-        Printf.fprintf oc "\tdkcheck -nl -I /usr/local/lib $< -e\n";
+        Printf.fprintf oc "\tdkcheck -nl -I $(DIR) $< -e\n";
         Printf.fprintf oc "\n";
 
         Printf.fprintf oc "%s.dko: %s.dk\n" name name;
-        Printf.fprintf oc "\tdkcheck -nl -I /usr/local/lib $< -e\n";
+        Printf.fprintf oc "\tdkcheck -nl -I $(DIR) $< -e\n";
         Printf.fprintf oc "\n";
 
         Printf.fprintf oc "proof_%s.dko : proof_%s.dk %s.dko $(DKO)\n" name name name;
-        Printf.fprintf oc "\tdkcheck -nl -I /usr/local/lib -I lemmas $< -e\n";
+        Printf.fprintf oc "\tdkcheck -nl -I $(DIR) -I lemmas $< -e\n";
         Printf.fprintf oc "\n";
 
         Printf.printf "%s\t \027[32m OK \027[0m\n\n%!" name_file;

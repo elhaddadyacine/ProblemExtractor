@@ -1,12 +1,13 @@
 BINDIR=$(dir $(shell which ocaml))
+DEPS=$(wildcard *.ml *.mli)
 all: spliter.native
 
-spliter.native:
+spliter.native: $(DEPS)
 	ocamlbuild $@
 
 # (Un)Installation
 
-install: spliter.native
+install: spliter.native 
 	@install -m 755 -d $(BINDIR)
 	@install -m 755 -p _build/spliter.native $(BINDIR)/problem_extractor
 	@echo 'Installation completed'
