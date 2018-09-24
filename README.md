@@ -24,7 +24,7 @@ To compile the tool, just type :
 ```bash
     make
 ```
-It will generate a native file named `spliter.native` if you want to install the tool in your binary installation folder (where ocaml is installed, if ocaml is installed in the `/usr/bin/` directory then you need the to call `make install` with `sudo`) use :
+It will generate a native file named `spliter.native` if you want to install the tool in your binary installation folder (where ocaml is installed, if ocaml is installed in the `/usr/bin/` directory then you need to call `make install` with `sudo`) use :
 
 ```bash
     make install
@@ -61,23 +61,23 @@ The program will generate 3 files, 1 signature file, a Makefile and 1 proof file
 - Makefile
 - proof_trace.dk
 
-We will produce the proof of each sub problem and typecheck them with : 
+We will produce the proof of each sub problem and typecheck them with a simple make (you can specify the folder of `zenon_modulo` logic files with the variable `DIR`, `/usr/local/lib/` by default): 
 ```bash
 cd trace
-make
+make DIR=/path/to/zenon/modulo/logic/files
 ```
 Files produced : 
 ```bash
-c_0_5.dk        # the proof of each problem (with zenon_modulo)
-c_0_6.dk        # ...
-c_0_7.dk        # ...
+lemmas/c_0_5.dk         # the proof of each problem (with zenon_modulo)
+lemmas/c_0_6.dk         # ...
+lemmas/c_0_7.dk         # ...
 
-c_0_5.dko       # typeching of each proof (with dedukti)
-c_0_6.dko       # ...
-c_0_7.dko       # ...
+lemmas/c_0_5.dko        # typeching of each proof (with dedukti)
+lemmas/c_0_6.dko        # ...
+lemmas/c_0_7.dko        # ...
 
-trace.dko       # the signature of the proof (contains all used symbols)
-proof_trace.dko # the global proof (contains the combination of sub solutions)
+trace.dko               # the signature of the proof (contains all used symbols)
+proof_trace.dko         # the global proof (contains the combination of sub solutions)
 ```
 
 
