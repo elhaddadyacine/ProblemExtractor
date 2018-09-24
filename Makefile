@@ -1,5 +1,5 @@
 BINDIR=$(dir $(shell which ocaml))
-DEPS=$(wildcard *.ml *.mli)
+DEPS=$(wildcard *.ml *.mli *.mly *.mll)
 all: spliter.native
 
 spliter.native: $(DEPS)
