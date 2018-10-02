@@ -51,7 +51,7 @@ let generate_makefile name =
         Printf.fprintf oc "\n";
 
         Printf.fprintf oc "lemmas/%%.dk : lemmas/%%.p\n";
-        Printf.fprintf oc "\tzenon_modulo -itptp -odkterm -sig %s $< > $@\n" name;
+        Printf.fprintf oc "\tzenon_modulo -itptp -max-time 10s -odkterm -sig %s $< > $@\n" name;
         Printf.fprintf oc "\n";
 
         Printf.fprintf oc "lemmas/%%.dko : lemmas/%%.dk %s.dko\n" name;
