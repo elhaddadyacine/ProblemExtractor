@@ -52,10 +52,8 @@ let rec generate_dk name l signame proof_tree goal =
         Printf.fprintf oc "def proof_%s : \n(" name;
         generate_dk_list oc l signame;
         Printf.fprintf oc ")\n\n:=\n";
-        Printf.printf "Log ABS \n%!";
         Printf.fprintf oc "%a" generate_abs l;
         Printf.fprintf oc "\n";
-        Printf.printf "Log PROOF \n%!";
         Printf.fprintf oc "%a." make_one_proof (goal, proof_tree);
         close_out oc;
         Printf.printf "%s \027[32m OK \027[0m\n\n%!" name_file

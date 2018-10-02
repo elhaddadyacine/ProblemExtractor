@@ -83,6 +83,8 @@ let rec expr_to_string e =
   |Etrue -> "$true"
   |Evar (x, _) -> x
   |Eapp (e, [], _) -> (expr_to_string e)
+  |Eapp (Evar("=", _), e1::e2::[], _) -> (expr_to_string e1) ^ " = " ^ (expr_to_string e2)
+  |Eapp (Evar("!=", _), e1::e2::[], _) -> (expr_to_string e1) ^ " != " ^ (expr_to_string e2)
   |Eapp (e, l, _) -> (expr_to_string e) ^ "(" ^ (expr_list_to_string l) ^ ")"
   |Eor (e1, e2, _) ->  (expr_to_string e1) ^ "|" ^ (expr_to_string e2)
   |Eall (v, e, _) as f -> "! [" ^ (print_var_all (get_var_all f)) ^ "] : (" ^ (expr_to_string (get_e_all f)) ^ ")"
