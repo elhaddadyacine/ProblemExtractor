@@ -79,7 +79,10 @@ let rec print_premises tstp_lines =
 
 
 
-(* let get_problems problem_list = List.map (fun p -> problem_to_string p) problem_list;; *)
+(* let get_problems problem_list 
+
+
+= List.map (fun p -> problem_to_string p) problem_list;; *)
 
 (* print used axioms in TPTP format *)
 let rec axioms_to_string (name, l) = 
@@ -148,7 +151,8 @@ let _ =
       let res : Phrase.tpphrase list = parse_file fname in
       let inferences = get_inferences res in
       let premises = print_premises inferences in
-      let axioms = get_axioms premises (get_lemmas premises) in
+      (* let axioms = get_axioms premises (get_lemmas premises) in *)
+      (* let l_goal = last_goal premises in *)
       (* let () = List.iter (fun m -> Printf.printf "%s" m) (get_axioms premises (get_lemmas premises)) in *)
       let name = (Filename.remove_extension (Filename.basename fname)) in 
       if Sys.command ("mkdir -p " ^ (Sys.getcwd ()) ^ "/" ^ name ^ "/lemmas") = 0 
@@ -161,7 +165,8 @@ let _ =
      (* Hashtbl.iter (fun x y -> Printf.printf "%s : %s\n%!" x (Expr.expr_to_string y)) Phrase.name_formula_tbl *)
       insert_symbols Phrase.name_formula_tbl;
       Signature.generate_signature_file name Signature.symbols_table;
-      Proof.generate_dk name axioms name premises (last_goal premises);
+      (*Printf.printf "Debug 1\n%!";
+      Proof.generate_dk name axioms name premises l_goal;*)
       Signature.generate_makefile name;
   | _             ->
       Printf.eprintf "Usage: %s file.p\n%!" Sys.argv.(0);

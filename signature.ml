@@ -46,7 +46,8 @@ let generate_makefile name =
         Printf.fprintf oc "TPTP=$(wildcard lemmas/*.p)\n";
         Printf.fprintf oc "DKS=$(TPTP:.p=.dk)\n";
         Printf.fprintf oc "DKO=$(DKS:.dk=.dko)\n";
-        Printf.fprintf oc "all: proof_%s.dko $(DKS)\n" name;
+        (* Printf.fprintf oc "all: proof_%s.dko $(DKS)\n" name; *)
+        Printf.fprintf oc "all: $(DKS)\n";
         Printf.fprintf oc "\n";
 
         Printf.fprintf oc "lemmas/%%.dk : lemmas/%%.p\n";
@@ -61,9 +62,9 @@ let generate_makefile name =
         Printf.fprintf oc "\tdkcheck -nl -I $(DIR) $< -e\n";
         Printf.fprintf oc "\n";
 
-        Printf.fprintf oc "proof_%s.dko : proof_%s.dk %s.dko $(DKO)\n" name name name;
+        (* Printf.fprintf oc "proof_%s.dko : proof_%s.dk %s.dko $(DKO)\n" name name name;
         Printf.fprintf oc "\tdkcheck -nl -I $(DIR) -I lemmas $< -e\n";
-        Printf.fprintf oc "\n";
+        Printf.fprintf oc "\n"; *)
 
         Printf.printf "%s\t \027[32m OK \027[0m\n\n%!" name_file;
         close_out oc;;

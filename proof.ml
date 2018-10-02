@@ -24,22 +24,21 @@ let rec print_dk_type ex signame =
 
 
 
-let rec generate_abs axioms = 
+let rec generate_abs oc axioms = 
     match axioms with
-     []             -> ""
-    |ax::l'         -> "ax_" ^ ax ^ " => " ^ (generate_abs l')
+     []             -> ()
+    |ax::l'         -> Printf.fprintf oc "ax_%s => %a" ax generate_abs l'
 ;;
 let is_axiom ax proof_tree =
     if List.exists (fun e -> fst e = ax) proof_tree then false else true;;
-let rec make_one_proof goal proof_tree = 
-    if is_axiom goal proof_tree then "ax_" ^ goal else
-    goal ^ ".delta " ^ (make_proofs (get_axioms goal proof_tree) proof_tree)
+let rec make_one_proof oc (goal, proof_tree) = 
+    if is_axiom goal proof_tree then Printf.fprintf oc "ax_%s" goal else
+    (Printf.fprintf oc "%s.delta \n" goal; make_proofs oc ((get_axioms goal proof_tree), proof_tree))
 and
-    make_proofs axioms proof_tree =
+    make_proofs oc (axioms, proof_tree) =
         match axioms with
-         []                 -> ""
-        |ax::l'             -> "(" ^ (make_one_proof ax proof_tree) ^ ") " 
-                            ^ (make_proofs l' proof_tree)
+         []                 -> ()
+        |ax::l'             -> Printf.fprintf oc "(%a)\n%a" make_one_proof (ax, proof_tree) make_proofs (l', proof_tree)
 and get_axioms goal proof_tree = 
     match proof_tree with
      []         -> []
@@ -49,13 +48,15 @@ and get_axioms goal proof_tree =
 let rec generate_dk name l signame proof_tree goal = 
     let name_file = ( (Sys.getcwd ())^ "/" ^ name ^ "/proof_" ^ name ^ ".dk") in 
     let oc = open_out name_file in
-        Printf.printf "\t ==== Generating the proof file ====\n";
+        Printf.printf "\t ==== Generating the proof file ====\n%!";
         Printf.fprintf oc "def proof_%s : \n(" name;
         generate_dk_list oc l signame;
         Printf.fprintf oc ")\n\n:=\n";
-        Printf.fprintf oc "%s" (generate_abs l);
+        Printf.printf "Log ABS \n%!";
+        Printf.fprintf oc "%a" generate_abs l;
         Printf.fprintf oc "\n";
-        Printf.fprintf oc "%s." (make_one_proof goal proof_tree);
+        Printf.printf "Log PROOF \n%!";
+        Printf.fprintf oc "%a." make_one_proof (goal, proof_tree);
         close_out oc;
         Printf.printf "%s \027[32m OK \027[0m\n\n%!" name_file
 and
