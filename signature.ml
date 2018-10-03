@@ -3,6 +3,7 @@ let symbols_table = Hashtbl.create 100;;
 
 let rec get_symbols b e =  
   match e with
+  |Eapp (Evar("=", _), l, _)  -> List.iter (get_symbols false) l
   |Eapp (Evar(x, _), l, _)  -> Hashtbl.replace symbols_table x (List.length l, b); List.iter (get_symbols false) l
   |Eor (e1, e2, _)          -> get_symbols true e1; get_symbols true e2
   |Eall (_, e', _)          -> get_symbols true e' 
